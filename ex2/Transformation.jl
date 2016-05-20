@@ -4,6 +4,7 @@ type Transformation
 	Transformation(v1,v2,v3,v4) = new(Mat4f(v1,v2,v3,v4))
 end
 
+# Apply transformation on a vector.
 *(T::Transformation, v::Vec4f) = T.M * v
 
 *(T::Transformation, O::Object) = objectTranslationHelper(T, O)
@@ -34,3 +35,5 @@ end
 function scaling(sx, sy, sz)
 	return Transformation(Vec4f(sx, 0, 0, 0), Vec4f(0, sy, 0 , 0), Vec4f(0, 0, sz, 0), Vec4f(0, 0, 0, 1))
 end
+
+*(T1::Transformation, T2::Transformation) = Transformation(T1.M*T2.M)
