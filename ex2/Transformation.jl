@@ -1,3 +1,4 @@
+import Base.*
 type Transformation
 	M::Mat4f
 	Transformation(v1,v2,v3,v4) = new(Mat4f(v1,v2,v3,v4))

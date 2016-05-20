@@ -1,3 +1,4 @@
+import Base.+, Base.*
 type Vec4f
 	e1::Float32
 	e2::Float32

@@ -1,3 +1,4 @@
+import Base.*
 type Mat4f
 	v1::Vec4f
 	v2::Vec4f

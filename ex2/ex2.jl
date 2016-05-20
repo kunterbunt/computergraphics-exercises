@@ -1,4 +1,3 @@
-import Base.-, Base.+, Base.*, Base./
 using PyPlot
 
 include("Vec4f.jl")
