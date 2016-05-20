@@ -43,6 +43,7 @@ T = Transformation(
 	Vec4f(0, 0, 0, 2)
 )
 
+# Rotate around origin.
 rotateObject(houseOfSantaClaus)
-# render(translation(1, 0, 0) * houseOfSantaClaus, figAxis=[-2,2,-2,2])
-# render(rotx(pi/4) * houseOfSantaClaus, figAxis=[-2,2,-2,2])
+# Rotate around edge.
+rotateObject(houseOfSantaClaus; figNum=2, center=[1,1,0])

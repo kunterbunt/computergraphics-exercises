@@ -5,8 +5,9 @@ type Object
  Object(x...) = new(collect(Vec4f,x))
 end
 
-function render(object; figAxis=[-1,1,-1,1])
+function render(object; figNum=1, figTitle="Object", figAxis=[-1,1,-1,1])
 	axis(figAxis)
+  figure(figNum)
 	x = []
 	y = []
 	for i in 1:length(object.vertices)
@@ -18,12 +19,14 @@ function render(object; figAxis=[-1,1,-1,1])
 	plot(x, y, linestyle="-")
 end
 
-function rotateObject(O)
-  for i = 1:60
-		render(rotz((2*pi) + (2 * i * (pi / 60))) * houseOfSantaClaus, figAxis=[-2,2,-2,2])
+function rotateObject(O; figNum=1, center=[0,0,0])
+  translateBefore = translation(center...)
+  translateAfter = translation(-center...)
+  for t = 1:60
+		render(translateBefore * rotz(2 * pi * t / 60) * translateAfter * houseOfSantaClaus; figNum=figNum, figAxis=[-2,2,-2,2])
     sleep(0.001)
-    if i < 60
-      clf()
+    if t < 60
+      clf() # Clear figure.
     end
 	end
 end

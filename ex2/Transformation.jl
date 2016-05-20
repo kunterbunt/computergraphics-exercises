@@ -1,6 +1,7 @@
 import Base.*
 type Transformation
 	M::Mat4f
+	Transformation(M::Mat4f) = new(M)
 	Transformation(v1,v2,v3,v4) = new(Mat4f(v1,v2,v3,v4))
 end
 
@@ -17,7 +18,12 @@ function objectTranslationHelper(T, O)
 end
 
 function translation(x, y, z)
-	return Transformation(Vec4f(1, 0, 0, x), Vec4f(0, 1, 0 , y), Vec4f(0, 0, 1, z), Vec4f(0, 0, 0, 1))
+	return Transformation(
+		Vec4f(1, 0, 0, 0),
+		Vec4f(0, 1, 0 , 0),
+		Vec4f(0, 0, 1, 0),
+		Vec4f(x, y, z, 1)
+	)
 end
 
 function rotx(phi)
