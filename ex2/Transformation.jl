@@ -1,4 +1,5 @@
-import Base.*
+import Base.*, Base.inv
+
 type Transformation
 	M::Mat4f
 	Transformation(M::Mat4f) = new(M)
@@ -43,3 +44,8 @@ function scaling(sx, sy, sz)
 end
 
 *(T1::Transformation, T2::Transformation) = Transformation(T1.M*T2.M)
+
+
+function euler(alpha, beta, delta)
+	return Transformation(rotz(delta) * roty(beta) * rotx(alpha))
+end

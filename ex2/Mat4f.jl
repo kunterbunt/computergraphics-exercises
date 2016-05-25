@@ -20,3 +20,13 @@ end
 	M1 * M2.v3,
 	M1 * M2.v4
 )
+
+function Mat4fToArray(M::Mat4f)
+	return [Vec4fToArray(M.v1); Vec4fToArray(M.v2); Vec4fToArray(M.v3); Vec4fToArray(M.v4)]
+end
+
+function GenIdentityMat4f()
+	return Mat4f(Vec4f(1,0,0,0), Vec4f(0,1,0,0), Vec4f(0,0,1,0), Vec4f(0,0,0,1))
+end
+
+inv(M::Mat4f) = map(x-> ArrayToVec4f(x),inv(Mat4fToArray(M))

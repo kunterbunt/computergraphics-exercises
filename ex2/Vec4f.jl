@@ -27,3 +27,14 @@ end
 	v.e3 * a,
 	v.e4 * a
 )
+
+
+function Vec4fToArray(v::Vec4f)
+	return [v.e1 v.e2 v.e3 v.e4]
+end
+
+function ArrayToVec4f(a::Float32...)
+	length(a)
+
+	return Vec4f(a[1], a[2], a[3], a[4])
+end
