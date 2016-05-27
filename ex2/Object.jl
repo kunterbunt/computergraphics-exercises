@@ -23,10 +23,10 @@ function rotateObject(O; figNum=1, center=[0,0,0])
   translateBefore = translation(center...)
   translateAfter = translation(-center...)
   for t = 1:60
-		render(translateBefore * rotz(2 * pi * t / 60) * translateAfter * houseOfSantaClaus; figNum=figNum, figAxis=[-2,2,-2,2])
+		render(translateBefore * rotz(2 * pi * t / 60) * translateAfter * O; figNum=figNum, figAxis=[-2,2,-2,2])
     sleep(0.001)
     if t < 60
       clf() # Clear figure.
     end
-	end
+  end
 end

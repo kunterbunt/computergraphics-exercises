@@ -20,10 +20,10 @@ end
 
 function translation(x, y, z)
 	return Transformation(
-		Vec4f(1, 0, 0, 0),
-		Vec4f(0, 1, 0 , 0),
-		Vec4f(0, 0, 1, 0),
-		Vec4f(x, y, z, 1)
+		Vec4f(1, 0, 0, x),
+		Vec4f(0, 1, 0 , y),
+		Vec4f(0, 0, 1, z),
+		Vec4f(0, 0, 0, 1)
 	)
 end
 
