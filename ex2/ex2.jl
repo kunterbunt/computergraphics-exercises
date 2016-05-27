@@ -61,4 +61,4 @@ render(houseOfSantaClaus)
 #inv(GenIdentityMat4f())
 
 GenExampleMat() * inv(GenExampleMat())
-
+#GenIdentityMat4f() * GenIdentityMat4f()
