@@ -18,6 +18,8 @@ function objectTranslationHelper(T, O)
 	return Object(x)
 end
 
+inv(T::Transformation) = Transformation(inv(T.M))
+
 function translation(x, y, z)
 	return Transformation(
 		Vec4f(1, 0, 0, x),

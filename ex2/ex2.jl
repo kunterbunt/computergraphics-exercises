@@ -48,7 +48,7 @@ render(houseOfSantaClaus)
 # Rotate around origin.
 #rotateObject(houseOfSantaClaus)
 # Rotate around edge.
-rotateObject(houseOfSantaClaus; figNum=2, center=[1,1,0])
+#rotateObject(houseOfSantaClaus; figNum=2, center=[1,1,0])
 
 #Ex2.2 rotation
 #render(euler(pi/4,pi/4,pi/4)*houseOfSantaClaus, figAxis=[-2,2,-2,2])
@@ -62,3 +62,4 @@ rotateObject(houseOfSantaClaus; figNum=2, center=[1,1,0])
 
 GenExampleMat() * inv(GenExampleMat())
 #GenIdentityMat4f() * GenIdentityMat4f()
+inv(euler(0,0,0))
