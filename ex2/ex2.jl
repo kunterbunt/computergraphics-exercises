@@ -58,4 +58,7 @@ render(houseOfSantaClaus)
 #render(euler(0,04,pi/4)*houseOfSantaClaus, figAxis=[-2,2,-2,2])
 
 #Mat4fToArray(GenIdentityMat4f())
-inv(GenIdentityMat4f())
+#inv(GenIdentityMat4f())
+
+GenExampleMat() * inv(GenExampleMat())
+

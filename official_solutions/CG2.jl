@@ -79,6 +79,10 @@ function inv(M::Mat4f)
 	return Mat4f(v1,v2,v3,v4)
 end
 
+function GenExampleMat()
+	return Mat4f(Vec4f(1,0,2,0), Vec4f(2,2,2,1), Vec4f(3,2,3,4), Vec4f(4,3,1,5))
+end
+
 inv(T::Transformation) = Transformation(Mat4f(inv(T.M)))
 
 
@@ -119,11 +123,11 @@ scaledHouseOfSantaClaus = scaling(0.5,0.5,0.5)*houseOfSantaClaus
 
 # canonical view direction
 camera = OrthoCamera(Float32[0,0,1],Float32[0,0,-1],Float32[0,1,0])
-render(scaledHouseOfSantaClaus,camera;figNum=4)
+#render(scaledHouseOfSantaClaus,camera;figNum=4)
 
 # screen moved backwards 9 unit length
 camera = OrthoCamera(Float32[0,0,10],Float32[0,0,-1],Float32[0,1,0])
-render(scaledHouseOfSantaClaus,camera;figNum=5)
+#render(scaledHouseOfSantaClaus,camera;figNum=5)
 
 # rotate screen clockwise
 for t=0:60
@@ -131,3 +135,5 @@ for t=0:60
 	render(scaledHouseOfSantaClaus,camera;figNum=6)
 	sleep(0.01)
 end
+
+inv(GenExampleMat()) * GenExampleMat()

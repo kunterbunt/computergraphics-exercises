@@ -28,6 +28,13 @@ end
 	v.e4 * a
 )
 
+#Scalarprodut
+*(a::Vec4f, b::Vec4f) = 
+	a.e1 * b.e1 +
+	b.e2 * b.e2 +
+	b.e3 * b.e3 +
+	b.e4 * b.e4
+
 
 function Vec4fToArray(v::Vec4f)
 	return [v.e1 v.e2 v.e3 v.e4]
