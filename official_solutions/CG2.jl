@@ -30,8 +30,8 @@ function rotateObject(Object;figNum=1,center=[0,0,0])
 		TObject = T*Object
 		# render transformed Object
 		render(TObject;figNum=figNum,figAxis=[-2,2,-2,2])
-		# sleep for 10ms 
-		sleep(0.01)	
+		# sleep for 10ms
+		sleep(0.01)
 	end
 end
 
@@ -67,15 +67,15 @@ import Base: inv
 # implement matrix inversion by faling back to the build in inv() function
 function inv(M::Mat4f)
 	m = zeros(4,4)
-	m[1,1] = M.v1.e1; m[1,2] = M.v2.e1; m[1,3] = M.v3.e1; m[1,4] = M.v4.e1; 
-	m[2,1] = M.v1.e2; m[2,2] = M.v2.e2; m[2,3] = M.v3.e2; m[2,4] = M.v4.e2; 
-	m[3,1] = M.v1.e3; m[3,2] = M.v2.e3; m[3,3] = M.v3.e3; m[3,4] = M.v4.e3; 
-	m[4,1] = M.v1.e4; m[4,2] = M.v2.e4; m[4,3] = M.v3.e4; m[4,4] = M.v4.e4; 
+	m[1,1] = M.v1.e1; m[1,2] = M.v1.e2; m[1,3] = M.v1.e3; m[1,4] = M.v1.e4;
+	m[2,1] = M.v2.e1; m[2,2] = M.v2.e2; m[2,3] = M.v2.e3; m[2,4] = M.v2.e4;
+	m[3,1] = M.v3.e1; m[3,2] = M.v3.e2; m[3,3] = M.v3.e3; m[3,4] = M.v3.e4;
+	m[4,1] = M.v4.e1; m[4,2] = M.v4.e1; m[4,3] = M.v4.e3; m[4,4] = M.v4.e4;
 	minv = inv(m)
-	v1 = Vec4f(minv[1:4,1]...)
-	v2 = Vec4f(minv[1:4,2]...)
-	v3 = Vec4f(minv[1:4,3]...)
-	v4 = Vec4f(minv[1:4,4]...)
+	v1 = Vec4f(minv[1,1:4]...)
+	v2 = Vec4f(minv[2,1:4]...)
+	v3 = Vec4f(minv[3,1:4]...)
+	v4 = Vec4f(minv[4,1:4]...)
 	return Mat4f(v1,v2,v3,v4)
 end
 
@@ -88,7 +88,7 @@ type OrthoCamera
 	worldToCam::Transformation
 end
 
-#= create OrthoCamera from center vector of screen (rc), viewing direction (rv) and 
+#= create OrthoCamera from center vector of screen (rc), viewing direction (rv) and
 the direction of the upper side of the screen=#
 function OrthoCamera(rc::Vector{Float32},rv::Vector{Float32},ru::Vector{Float32})
 	a = [rv[2]*ru[3]-rv[3]*ru[2],rv[3]*ru[1]-rv[1]*ru[3],rv[1]*ru[2]-rv[2]*ru[1]]

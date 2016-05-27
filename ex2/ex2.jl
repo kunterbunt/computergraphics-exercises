@@ -43,6 +43,8 @@ T = Transformation(
 	Vec4f(0, 0, 0, 2)
 )
 
+render(houseOfSantaClaus)
+
 # Rotate around origin.
 #rotateObject(houseOfSantaClaus)
 # Rotate around edge.
