@@ -1,0 +1,5 @@
+1 in vector means it's a position
+o = ... could also have -camera.d 	//convention
+AABB => Access Allined Bounding Box
+For each plane (of the 6), Check where ray hit it (at point p) => check if p lies in the box
+
