@@ -49,5 +49,5 @@ end
 
 
 function euler(alpha, beta, delta)
-	return Transformation(rotz(delta) * roty(beta) * rotx(alpha))
+	return Transformation(rotz(delta) * rotx(beta) * roty(alpha))
 end
