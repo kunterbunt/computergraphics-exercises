@@ -47,7 +47,6 @@ end
 
 *(T1::Transformation, T2::Transformation) = Transformation(T1.M*T2.M)
 
-
 function euler(alpha, beta, delta) 
 	return Transformation(rotz(delta) * rotx(beta) * roty(alpha))
 end

@@ -4,6 +4,7 @@ include("Vec4f.jl")
 include("Mat4f.jl")
 include("Object.jl")
 include("Transformation.jl")
+include("Camera.jl")
 
 M1 = Mat4f(
 	Vec4f(1, 2, 3, 4),
@@ -43,7 +44,7 @@ T = Transformation(
 	Vec4f(0, 0, 0, 2)
 )
 
-render(houseOfSantaClaus)
+#render(houseOfSantaClaus)
 
 # Rotate around origin.
 #rotateObject(houseOfSantaClaus)
@@ -60,6 +61,26 @@ render(houseOfSantaClaus)
 #Mat4fToArray(GenIdentityMat4f())
 #inv(GenIdentityMat4f())
 
-GenExampleMat() * inv(GenExampleMat())
+#GenExampleMat() * inv(GenExampleMat())
 #GenIdentityMat4f() * GenIdentityMat4f()
-inv(euler(0,0,0))
+#inv(euler(0,0,0))
+
+
+
+scaledHouseOfSantaClaus = scaling(0.5,0.5,0.5)*houseOfSantaClaus
+
+# canonical view direction
+camera = OrthoCamera(Float32[0,0,1],Float32[0,0,-1],Float32[0,1,0])
+render(scaledHouseOfSantaClaus,camera;figNum=4)
+
+# screen moved backwards 9 unit length
+camera = OrthoCamera(Float32[0,0,10],Float32[0,0,-1],Float32[0,1,0])
+render(scaledHouseOfSantaClaus,camera;figNum=5)
+
+# rotate screen clockwise
+for t=0:60
+    camera = OrthoCamera(Float32[0,0,1],Float32[0,0,-1],Float32[sin(2*pi*t
+       /60),cos(2*pi*t/60),0])
+    render(scaledHouseOfSantaClaus,camera;figNum=6)
+    sleep(0.01)
+end

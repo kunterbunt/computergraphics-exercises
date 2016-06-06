@@ -36,9 +36,9 @@ function rotateObject(Object;figNum=1,center=[0,0,0])
 end
 
 # rotate houseOfSantaClaus around origin
-rotateObject(houseOfSantaClaus)
+#rotateObject(houseOfSantaClaus)
 # rotate houseOfSantaClaus around edge
-rotateObject(houseOfSantaClaus;figNum=2,center=[1,1,0])
+#rotateObject(houseOfSantaClaus;figNum=2,center=[1,1,0])
 
 
 # task 3
@@ -59,7 +59,7 @@ end
 R = eulermatrix(π/4,π/4,π/4)
 rotatedHouseOfSantaClaus = R*houseOfSantaClaus
 # render rotated houseOfSantaClaus
-render(rotatedHouseOfSantaClaus;figNum=3,figAxis=[-2,2,-2,2])
+#render(rotatedHouseOfSantaClaus;figNum=3,figAxis=[-2,2,-2,2])
 
 
 # task 4
@@ -123,11 +123,11 @@ scaledHouseOfSantaClaus = scaling(0.5,0.5,0.5)*houseOfSantaClaus
 
 # canonical view direction
 camera = OrthoCamera(Float32[0,0,1],Float32[0,0,-1],Float32[0,1,0])
-#render(scaledHouseOfSantaClaus,camera;figNum=4)
+render(scaledHouseOfSantaClaus,camera;figNum=4)
 
 # screen moved backwards 9 unit length
 camera = OrthoCamera(Float32[0,0,10],Float32[0,0,-1],Float32[0,1,0])
-#render(scaledHouseOfSantaClaus,camera;figNum=5)
+render(scaledHouseOfSantaClaus,camera;figNum=5)
 
 # rotate screen clockwise
 for t=0:60
@@ -135,5 +135,3 @@ for t=0:60
 	render(scaledHouseOfSantaClaus,camera;figNum=6)
 	sleep(0.01)
 end
-
-inv(GenExampleMat()) * GenExampleMat()
