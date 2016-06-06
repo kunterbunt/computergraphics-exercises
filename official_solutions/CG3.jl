@@ -261,15 +261,15 @@ function surfaceNormal(ray::Ray,t::Float32,aabb::AABB)
 	z = abs(ch.e3/aabb.hz)
 	if x > y
 		if x > z
-			return Vec4f(1,0,0,0)
+			return sign(ch.e1/aabb.hx)*Vec4f(1,0,0,0)
 		else
-			return Vec4f(0,0,1,0)
+			return sign(ch.e3/aabb.hz)*Vec4f(0,0,1,0)
 		end
 	else
 		if y > z
-			return Vec4f(0,1,0,0)
+			return sign(ch.e2/aabb.hy)*Vec4f(0,1,0,0)
 		else
-			return Vec4f(0,0,1,0)
+			return sign(ch.e3/aabb.hz)*Vec4f(0,0,1,0)
 		end
 	end
 end

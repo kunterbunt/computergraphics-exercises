@@ -1,11 +1,8 @@
-abstract Camera
-
-type OrthoCamera <: Camera
+type OrthoCamera
 	camToWorld::Transformation
 	worldToCam::Transformation
 end
 
-#Probably wrong, change Mat4f row/col
 function OrthoCamera(rc::Vector{Float32},rv::Vector{Float32},ru::Vector{Float32})
 	a = [rv[2]*ru[3]-rv[3]*ru[2],rv[3]*ru[1]-rv[1]*ru[3],rv[1]*ru[2]-rv[2]*ru[1]]
 	b = ru
@@ -25,17 +22,4 @@ function render(object::Object,camera::OrthoCamera;figNum=1)
 	# transform scene given in world coordinates to camera space
 	camObject = camera.worldToCam*object
 	render(camObject;figNum=figNum)
-end
-
-type PinholeCamera <: Camera
-	camToWorld::Transformation
-	worldToCam::Transformation
-	
-	#ScreenRes
-	nx::Int
-	ny::Int
-
-	w::Float32
-	h::Float32
-	d::Float32
 end
