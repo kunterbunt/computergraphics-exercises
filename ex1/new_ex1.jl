@@ -86,6 +86,7 @@ houseOfSantaClaus = Object(
 # Task 3.
 type Transformation
 	Mat::Mat4f
+  Transformation(Mat::Mat4f) = new(Mat)
 	Transformation(vec1, vec2, vec3, vec4) = new(Mat4f(vec1, vec2, vec3, vec4))
 end
 *(Transf::Transformation, vec::Vec4f) = Transf.Mat * vec
