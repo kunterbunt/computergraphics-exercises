@@ -123,15 +123,17 @@ scaledHouseOfSantaClaus = scaling(0.5,0.5,0.5)*houseOfSantaClaus
 
 # canonical view direction
 camera = OrthoCamera(Float32[0,0,1],Float32[0,0,-1],Float32[0,1,0])
-render(scaledHouseOfSantaClaus,camera;figNum=4)
+# render(scaledHouseOfSantaClaus,camera;figNum=4)
 
 # screen moved backwards 9 unit length
 camera = OrthoCamera(Float32[0,0,10],Float32[0,0,-1],Float32[0,1,0])
-render(scaledHouseOfSantaClaus,camera;figNum=5)
+# render(scaledHouseOfSantaClaus,camera;figNum=5)
 
 # rotate screen clockwise
-for t=0:60
-	camera = OrthoCamera(Float32[0,0,1],Float32[0,0,-1],Float32[sin(2*π*t/60),cos(2*π*t/60),0])
-	render(scaledHouseOfSantaClaus,camera;figNum=6)
-	sleep(0.01)
-end
+# for t=0:60
+# 	camera = OrthoCamera(Float32[0,0,1],Float32[0,0,-1],Float32[sin(2*π*t/60),cos(2*π*t/60),0])
+# 	render(scaledHouseOfSantaClaus,camera;figNum=6)
+# 	sleep(0.01)
+# end
+
+OrthoCamera(Float32[12, 0, 0], Float32[1, 23, 0], Float32[1, 0, 9])
