@@ -93,25 +93,34 @@ function OrthoCamera(eW::Vec4f, eUp::Vec4f, eView::Vec4f)
     worldToCam = Transformation(GenIdentityMat4f())
     return OrthoCamera(camToWorld, worldToCam)
   end
-  angleZ = asin(euclideanNorm(crossProductZ) / (euclideanNorm(rCenter) * euclideanNorm(eW)))
+  #angleZ = asin(euclideanNorm(crossProductZ) / (euclideanNorm(rCenter) * euclideanNorm(eW)))
 
-  crossProductX = crossproduct(rView, eView)
-  angleX = asin(euclideanNorm(crossProductX) / (euclideanNorm(rView) * euclideanNorm(eView)))
+  #crossProductX = crossproduct(rView, eView)
+  #angleX = asin(euclideanNorm(crossProductX) / (euclideanNorm(rView) * euclideanNorm(eView)))
 
-  crossProductY = crossproduct(rUp, eUp)
-  angleY = asin(euclideanNorm(crossProductY) / (euclideanNorm(rUp) * euclideanNorm(eUp)))
+  #crossProductY = crossproduct(rUp, eUp)
+  #angleY = asin(euclideanNorm(crossProductY) / (euclideanNorm(rUp) * euclideanNorm(eUp)))
 
-  transf = euler(angleX, angleY, angleZ)
-  return OrthoCamera(transf, inv(transf))
+  #transf = euler(angleX, angleY, angleZ)
+  wtc_m = Mat4f(eView, eUp, eW, Vec4f(0,0,0,1))
+  wtc = Transformation(wtc_m * Mat4f(rView, rUp, rCenter, Vec4f(0,0,0,1)))
+  ctw = inv(wtc)
+
+  return OrthoCamera(wtc, ctw)
 end
 
 
 
 function render(object::Object, camera::OrthoCamera; figNum=1)
-  render(camera.worldToCam * object, figNum)
+  render(camera.worldToCam * object)
 end
 
-# render(houseOfSantaClaus, OrthoCamera(Vec4f(12, 0, 0, 1), Vec4f(1, 23, 0, 1), Vec4f(1, 0, 9, 1)))
+function renderP(object::Object, camera::Transformation; figNum=1)
+  render(camera* object)
+end
+
+#cam = OrthoCamera(Vec4f(12, 0, 0, 1), Vec4f(1, 23, 0, 1), Vec4f(1, 0, 9, 1))
+#renderP(houseOfSantaClaus, cam.worldToCam)
 OrthoCamera(Vec4f(12, 0, 0, 1), Vec4f(1, 23, 0, 1), Vec4f(1, 0, 9, 1)).worldToCam
 # cam =
 # v1 = Vec4f(1, 1, 1, 1)
