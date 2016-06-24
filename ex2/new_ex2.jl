@@ -82,38 +82,31 @@ function GenIdentityMat4f()
 	return Mat4f(Vec4f(1,0,0,0), Vec4f(0,1,0,0), Vec4f(0,0,1,0), Vec4f(0,0,0,1))
 end
 
-function OrthoCamera(eW::Vec4f, eUp::Vec4f, eView::Vec4f)
-  rCenter = Vec4f(0, 0, 1, 1)
-  rUp::Vec4f = Vec4f(1, 0, 0, 1)
-  rView::Vec4f = Vec4f(0, 1, 0, 1)
+function OrthoCamera(rc::Vector{Float32},rv::Vector{Float32},ru::Vector{Float32})
+	a = [rv[2]*ru[3]-rv[3]*ru[2],rv[3]*ru[1]-rv[1]*ru[3],rv[1]*ru[2]-rv[2]*ru[1]]
+	b = ru
+	c = -rv
 
-  crossProductZ = crossproduct(rCenter, eW)
-  if crossProductZ.x == 0 && crossProductZ.y == 0 && crossProductZ.z == 0
-    camToWorld = Transformation(GenIdentityMat4f())
-    worldToCam = Transformation(GenIdentityMat4f())
-    return OrthoCamera(camToWorld, worldToCam)
-  end
-  angleZ = asin(euclideanNorm(crossProductZ) / (euclideanNorm(rCenter) * euclideanNorm(eW)))
+	v1 = Vec4f(a[1], a[2], a[3], 0)
+	v2 = Vec4f(b[1], b[2], b[3], 0)
+	v3 = Vec4f(c[1], c[2], c[3], 0)
+	v4 = Vec4f(rc[1], rc[2], rc[3], 1)
+	T = Transformation(Mat4f(v1,v2,v3,v4))
+	Tinv = inv(T)
 
-  crossProductX = crossproduct(rView, eView)
-  angleX = asin(euclideanNorm(crossProductX) / (euclideanNorm(rView) * euclideanNorm(eView)))
-
-  crossProductY = crossproduct(rUp, eUp)
-  angleY = asin(euclideanNorm(crossProductY) / (euclideanNorm(rUp) * euclideanNorm(eUp)))
-
-  transf = euler(angleX, angleY, angleZ)
-  return OrthoCamera(transf, inv(transf))
+	return OrthoCamera(T,Tinv)
 end
 
-
-
-function render(object::Object, camera::OrthoCamera; figNum=1)
-  render(camera.worldToCam * object, figNum)
+function render(object::Object,camera::OrthoCamera;figNum=1)
+	# transform scene given in world coordinates to camera space
+	camObject = camera.worldToCam*object
+	render(camObject;figNum=figNum)
 end
 
-# render(houseOfSantaClaus, OrthoCamera(Vec4f(12, 0, 0, 1), Vec4f(1, 23, 0, 1), Vec4f(1, 0, 9, 1)))
-OrthoCamera(Vec4f(12, 0, 0, 1), Vec4f(1, 23, 0, 1), Vec4f(1, 0, 9, 1)).worldToCam
-# cam =
-# v1 = Vec4f(1, 1, 1, 1)
-# v2 = Vec4f(1, 1, 1, 1)
-# crossproduct(v1, v2)
+scaledHouseOfSantaClaus = scaling(0.5,0.5,0.5)*houseOfSantaClaus
+
+# for t=0:60
+# 	camera = OrthoCamera(Float32[0,0,1],Float32[0,0,-1],Float32[sin(2*π*t/60),cos(2*π*t/60),0])
+# 	render(scaledHouseOfSantaClaus,camera;figNum=6)
+# 	sleep(0.01)
+# end
