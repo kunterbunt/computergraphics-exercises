@@ -163,13 +163,14 @@ function intersect(ray::Ray, scene::Scene)
         b, t_0, t_1 = intersect(ray, o)
         if b
             if t_0 < nearest_dist
-                nearest_dist = t_0
-                nearest_type = type(o)
-            end
+                nearest_dist = t_0;
+                nearest_type = typeof(o)
+            end;
+
             if t_1 < nearest_dist
-                nearest_dist = t_0
-                nearest_type = type(o)
-            end
+                nearest_dist = t_0;
+                nearest_type = typeof(o)
+            end;
             obj_hit = true
         end
     end
