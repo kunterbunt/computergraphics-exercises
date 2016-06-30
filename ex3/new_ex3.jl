@@ -68,14 +68,16 @@ end
 AABB(center::Vector{Float32}, hx::Float32, hy::Float32, hz::Float32) = AABB(Vec4f(center[1], center[2], center[3], 1), hx, hy, hz)
 
 *(vec1::Vec4f, vec2::Vec4f) = vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z
--(vec1::Vec4f, vec2::Vec4f) = Vec4f(vec1.x - vec2.x, vec1.y - vec2.y, vec3.z - vec3.z, vec1.v)
+-(vec1::Vec4f, vec2::Vec4f) = Vec4f(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z, vec1.v)
+
+*(a::Int64, v::Vec4f) = Vec4f(a*v.x, a*v.y, a*v.z, v.v)
 
 function intersect(ray::Ray, sphere::Sphere)
   A = ray.direction * ray.direction
   B = 2 * ray.direction * (ray.origin - sphere.center)
   C = (ray.origin - sphere.center) * (ray.origin - sphere.center)
   discriminant = B * B - 4 * A * C
-  if discriminant = 0
+  if discriminant == 0
     t = (-B + sqrt(B*B-4*A*C))/2*A
     return true, t, t
   elseif discriminant > 0
@@ -162,25 +164,24 @@ function intersect(ray::Ray, scene::Scene)
         if b
             if t_0 < nearest_dist
                 nearest_dist = t_0
-                nearest_type = t(o)
+                nearest_type = type(o)
             end
             if t_1 < nearest_dist
                 nearest_dist = t_0
-                nearest_type = t(o)
+                nearest_type = type(o)
             end
             obj_hit = true
         end
     end
-
     return obj_hit, nearest_dist, nearest_type
 end
 
-function hitShader(ray::Ray, scene::SceneObject)
+function hitShader(ray::Ray, scene::Scene)
     b, d, t = intersect(ray, scene)
     if b
-        return 0.0f
+        return 0.0f0
     else
-        return 0.0f
+        return 0.0f0
     end
 end
 
@@ -200,7 +201,7 @@ function tracerays(scene::Scene,camera::Camera,shader::Function)
     # final visualization of image
     figure()
     gray()
-    imshow(screen’)
+    imshow(screen)
     colorbar()
 end
 
