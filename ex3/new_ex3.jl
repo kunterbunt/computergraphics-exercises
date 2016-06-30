@@ -75,13 +75,145 @@ function intersect(ray::Ray, sphere::Sphere)
   B = 2 * ray.direction * (ray.origin - sphere.center)
   C = (ray.origin - sphere.center) * (ray.origin - sphere.center)
   discriminant = B * B - 4 * A * C
-  if discriminant >= 0
-    return true
+  if discriminant = 0
+    t = (-B + sqrt(B*B-4*A*C))/2*A
+    return true, t, t
+  elseif discriminant > 0
+    t_min = (-B + sqrt(B*B-4*A*C))/2*A
+    t_max = (-B - sqrt(B*B-4*A*C))/2*A
+    if t_min > t_max
+      t_min, t_max = t_max,  t_min
+    end
+    return true, t_min, t_max
   else
-    return false
+    return false, Inf32, Inf32
   end
 end
 
 function intersect(ray::Ray, aabb::AABB)
+    aabb_x_min = aabb.center.x - aabb.hx
+    aabb_x_max = aabb.center.x + aabb.hx
+    aabb_y_min = aabb.center.y - aabb.hy
+    aabb_y_max = aabb.center.y + aabb.hy
+    aabb_z_min = aabb.center.z - aabb.hz
+    aabb_z_max = aabb.center.z + aabb.hz
 
+    # Interval of available t's for x direction
+    t_x_min = (aabb_x_min - ray.origin.x) / ray.direction.x
+    t_x_max = (aabb_x_max - ray.origin.x) / ray.direction.x
+    if t_x_min > t_x_max
+        t_x_min, t_x_max = t_x_max, t_x_min
+    end
+
+    t_y_min = (aabb_y_min - ray.origin.y) / ray.direction.y
+    t_y_max = (aabb_y_max - ray.origin.y) / ray.direction.y
+    if t_y_min > t_y_max
+        t_y_min, t_y_max = t_y_max, t_y_min
+    end
+
+    #No overlapp between both intervalls
+    if (t_x_min > t_y_max || t_y_min > t_x_max)
+        return false, Inf32, Inf32
+    end
+
+    #intersection of both intervalls
+    if t_y_min > t_x_min
+        t_x_min = t_y_min
+    end
+    if t_y_max < t_x_max
+        t_x_max = t_y_max
+    end
+
+    t_z_min = (aabb_z_min - ray.origin.z) / ray.direction.z
+    t_z_max = (aabb_z_max - ray.origin.z) / ray.direction.z
+    if t_z_min > t_z_max
+        t_z_min, t_z_max = t_z_max, t_z_min
+    end
+
+    if (t_x_min > t_z_max || t_z_min > t_x_max)
+        return false, Inf32, Inf32
+    end
+
+    if t_z_min > t_x_min
+        t_x_min = t_z_min
+    end
+    if t_z_max < t_x_max
+        t_x_max = t_z_max
+    end
+
+    return true, t_z_min, t_z_max
 end
+
+
+type Scene
+    sceneObjects::Vector{SceneObject}
+end
+
+function intersect(ray::Ray, scene::Scene)
+    nearest_type = nothing
+    nearest_dist = Inf32
+    b = false
+    t_0 = Inf32
+    t_1 = Inf32
+    obj_hit = false
+
+    for o in scene.sceneObjects
+        b, t_0, t_1 = intersect(ray, o)
+        if b
+            if t_0 < nearest_dist
+                nearest_dist = t_0
+                nearest_type = t(o)
+            end
+            if t_1 < nearest_dist
+                nearest_dist = t_0
+                nearest_type = t(o)
+            end
+            obj_hit = true
+        end
+    end
+
+    return obj_hit, nearest_dist, nearest_type
+end
+
+function hitShader(ray::Ray, scene::SceneObject)
+    b, d, t = intersect(ray, scene)
+    if b
+        return 0.0f
+    else
+        return 0.0f
+    end
+end
+
+
+function tracerays(scene::Scene,camera::Camera,shader::Function)
+    nx = camera.nx
+    ny = camera.ny
+    screen = Array(Float32,nx,ny)
+    for i=1:nx
+        for j=1:ny
+            # generate ray for pixel i,j
+            ray = generateRay(camera, i, j)
+            # use shader function to calculate pixel value
+            screen[i,j] = shader(ray, scene)
+        end
+    end
+    # final visualization of image
+    figure()
+    gray()
+    imshow(screen’)
+    colorbar()
+end
+
+# set up individual objects
+sphere1 = Sphere(Float32[-0.5,0.5,0],0.25f0)
+sphere2 = Sphere(Float32[-0.5,-0.5,0],0.5f0)
+aabb1 = AABB(Float32[0.5,-0.5,0],0.25f0,0.25f0,0.25f0)
+aabb2 = AABB(Float32[0.5,0.5,0],0.5f0,0.5f0,0.5f0)
+# set up scene
+scene = Scene(SceneObject[sphere1,sphere2,aabb1,aabb2])
+
+# set up camera
+camera = PinholeCamera(Float32[0,0,1],Float32[0,0,-1],Float32[0,1,0])
+
+# render scene
+tracerays(scene, camera, hitShader)
