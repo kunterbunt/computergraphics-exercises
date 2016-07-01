@@ -100,17 +100,36 @@ function intersect(ray::Ray, aabb::AABB)
     aabb_z_min = aabb.center.z - aabb.hz
     aabb_z_max = aabb.center.z + aabb.hz
 
-    # Interval of available t's for x direction
-    t_x_min = (aabb_x_min - ray.origin.x) / ray.direction.x
-    t_x_max = (aabb_x_max - ray.origin.x) / ray.direction.x
-    if t_x_min > t_x_max
-        t_x_min, t_x_max = t_x_max, t_x_min
+    t_x_min = -Inf32
+    t_x_max = Inf32
+    t_y_min = -Inf32
+    t_y_max = Inf32
+    t_z_min = -Inf32
+    t_z_max = Inf32
+
+    if (ray.direction.x == 0) && (ray.origin.x <= aabb_x_max) && (ray.origin.x >= aabb_x_min)
+      #c_x = true
+    elseif (ray.direction.x > 0)
+      # Interval of available t's for x direction
+      t_x_min = (aabb_x_min - ray.origin.x) / ray.direction.x
+      t_x_max = (aabb_x_max - ray.origin.x) / ray.direction.x
+      if t_x_min > t_x_max
+          t_x_min, t_x_max = t_x_max, t_x_min
+      end
+    else
+      return false, Inf32, Inf32
     end
 
-    t_y_min = (aabb_y_min - ray.origin.y) / ray.direction.y
-    t_y_max = (aabb_y_max - ray.origin.y) / ray.direction.y
-    if t_y_min > t_y_max
-        t_y_min, t_y_max = t_y_max, t_y_min
+    if (ray.direction.y == 0) && (ray.origin.y <= aabb_y_max) && (ray.origin.y >= aabb_y_min)
+      #c_x = true
+    elseif (ray.direction.y > 0)
+      t_y_min = (aabb_y_min - ray.origin.y) / ray.direction.y
+      t_y_max = (aabb_y_max - ray.origin.y) / ray.direction.y
+      if t_y_min > t_y_max
+          t_y_min, t_y_max = t_y_max, t_y_min
+      end
+    else
+      return false, Inf32, Inf32
     end
 
     #No overlapp between both intervalls
@@ -126,10 +145,16 @@ function intersect(ray::Ray, aabb::AABB)
         t_x_max = t_y_max
     end
 
-    t_z_min = (aabb_z_min - ray.origin.z) / ray.direction.z
-    t_z_max = (aabb_z_max - ray.origin.z) / ray.direction.z
-    if t_z_min > t_z_max
-        t_z_min, t_z_max = t_z_max, t_z_min
+    if (ray.direction.z == 0) && (ray.origin.z <= aabb_z_max) && (ray.origin.z >= aabb_z_min)
+      #c_x = true
+    elseif (ray.direction.z > 0)
+      t_z_min = (aabb_z_min - ray.origin.z) / ray.direction.z
+      t_z_max = (aabb_z_max - ray.origin.z) / ray.direction.z
+      if t_z_min > t_z_max
+          t_z_min, t_z_max = t_z_max, t_z_min
+      end
+    else
+      return false, Inf32, Inf32
     end
 
     if (t_x_min > t_z_max || t_z_min > t_x_max)
