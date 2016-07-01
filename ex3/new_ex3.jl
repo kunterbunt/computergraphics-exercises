@@ -4,26 +4,22 @@ abstract Camera
 type PinholeCamera <: Camera
   camToWorld::Transformation
   worldToCam::Transformation
-
   # screen resolution in x direction
   nx::Int
-
   # screen resulution in y direction
   ny::Int
-
   # screen width
   w::Float32
-
   # screen height
   h::Float32
-
   # distance eye screen
   d::Float32
+
   PinholeCamera(camToWorld::Transformation,worldToCam::Transformation) = new(camToWorld,worldToCam,800,800,2.0f0,2.0f0,2.0f0)
 end
 
 function PinholeCamera(rc::Vector{Float32},rv::Vector{Float32},ru::Vector{Float32})
-	a = [rv[2]*ru[3]-rv[3]*ru[2],rv[3]*ru[1]-rv[1]*ru[3],rv[1]*ru[2]-rv[2]*ru[1]]
+  a = [rv[2]*ru[3]-rv[3]*ru[2],rv[3]*ru[1]-rv[1]*ru[3],rv[1]*ru[2]-rv[2]*ru[1]]
 	b = ru
 	c = -rv
 
@@ -42,12 +38,36 @@ type Ray
   direction::Vec4f
 end
 
+function generateRay(camera::OrthoCamera, i::Int, j::Int)
+	u = -camera.w/2 + camera.w*(i-0.5)/camera.nx
+	v = +camera.h/2 - camera.h*(j-0.5)/camera.ny
+
+	# origin in world coordinates
+	origin = camera.camToWorld*Vec4f(u,v,0,1)
+	# unit vector for ray direction
+	direction = camera.camToWorld*Vec4f(0,0,-1,0)
+	return Ray(origin,direction)
+end
+
 function generateRay(camera::PinholeCamera, i::Int, j::Int)
-  xPixelWidth = camera.w / camera.nx
-  yPixelWidth = camera.h / camera.ny
-  origin = Vec4f(xPixelWidth * i, yPixelWidth * j, 0, 1)
-  direction = Vec4f(0, camera.h, camera.d, 0)
-  return Ray(camera.camToWorld * origin, camera.camToWorld * direction)
+  # xPixelWidth = camera.w / camera.nx
+  # yPixelWidth = camera.h / camera.ny
+  # origin = Vec4f(xPixelWidth * i, yPixelWidth * j, 0, 1)
+  # direction = Vec4f(0, camera.h, camera.d, 0)
+  # return Ray(camera.camToWorld * origin, camera.camToWorld * direction)
+  u = -camera.w/2 + camera.w*(i-0.5)/camera.nx
+	v = +camera.h/2 - camera.h*(j-0.5)/camera.ny
+	# pixel position
+	p = Vec4f(u,v,0,1)
+	# eye position
+	o = Vec4f(0,0,camera.d,1)
+
+	# origin in world coordinates
+	origin = camera.camToWorld*p
+	# unit vector for ray direction
+	direction = camera.camToWorld*(unitize(p-o))
+	# println(direction);
+	return Ray(origin,direction)
 end
 
 abstract SceneObject
@@ -72,24 +92,46 @@ AABB(center::Vector{Float32}, hx::Float32, hy::Float32, hz::Float32) = AABB(Vec4
 
 *(a::Int64, v::Vec4f) = Vec4f(a*v.x, a*v.y, a*v.z, v.v)
 
+import Base: dot
+dot(v::Vec4f,w::Vec4f) = v.x*w.x+v.y*w.y+v.z*w.z+v.v*w.v
+unitize(v::Vec4f) = (1.0f0 / sqrt(dot(v, v)) * v)
+
 function intersect(ray::Ray, sphere::Sphere)
-  A = ray.direction * ray.direction
-  B = 2 * ray.direction * (ray.origin - sphere.center)
-  C = (ray.origin - sphere.center) * (ray.origin - sphere.center)
-  discriminant = B * B - 4 * A * C
-  if discriminant == 0
-    t = (-B + sqrt(B*B-4*A*C))/2*A
-    return true, t, t
-  elseif discriminant > 0
-    t_min = (-B + sqrt(B*B-4*A*C))/2*A
-    t_max = (-B - sqrt(B*B-4*A*C))/2*A
-    if t_min > t_max
-      t_min, t_max = t_max,  t_min
-    end
-    return true, t_min, t_max
-  else
-    return false, Inf32, Inf32
+  # A = ray.direction * ray.direction
+  # B = 2 * ray.direction * (ray.origin - sphere.center)
+  # C = (ray.origin - sphere.center) * (ray.origin - sphere.center)
+  # discriminant = B * B - 4 * A * C
+  # if discriminant == 0
+  #   t = (-B + sqrt(B*B-4*A*C))/2*A
+  #   return true, t, t
+  # elseif discriminant > 0
+  #   t_min = (-B + sqrt(B*B-4*A*C))/2*A
+  #   t_max = (-B - sqrt(B*B-4*A*C))/2*A
+  #   if t_min > t_max
+  #     t_min, t_max = t_max,  t_min
+  #   end
+  #   return true, t_min, t_max
+  # else
+  #   return false, Inf32, Inf32
+  # end
+  l = sphere.center-ray.origin
+  l² = dot(l,l)
+  s = dot(l,ray.direction)
+  r² = sphere.radius^2
+  # sphere at backside of camera
+  if s<0 && l²>r²
+    return false, 0.0f0, 0.0f0
   end
+  m² = l²-s^2
+  # ray passes sphere
+  if m² > r²
+    return false, 0.0f0, 0.0f0
+  end
+  q = sqrt(r²-m²)
+  # hit point depends on camera position (inside or outside the sphere)
+  t = l²>r² ? s-q : s+q
+  # println("Hit!")
+  return true, t, 0.0f0
 end
 
 function intersect(ray::Ray, aabb::AABB)
@@ -109,7 +151,7 @@ function intersect(ray::Ray, aabb::AABB)
 
     if (ray.direction.x == 0) && (ray.origin.x <= aabb_x_max) && (ray.origin.x >= aabb_x_min)
       #c_x = true
-    elseif (ray.direction.x > 0)
+    elseif (ray.direction.x > 0) || (ray.direction.x < 0)
       # Interval of available t's for x direction
       t_x_min = (aabb_x_min - ray.origin.x) / ray.direction.x
       t_x_max = (aabb_x_max - ray.origin.x) / ray.direction.x
@@ -122,7 +164,7 @@ function intersect(ray::Ray, aabb::AABB)
 
     if (ray.direction.y == 0) && (ray.origin.y <= aabb_y_max) && (ray.origin.y >= aabb_y_min)
       #c_x = true
-    elseif (ray.direction.y > 0)
+    elseif (ray.direction.y > 0) || (ray.direction.y < 0)
       t_y_min = (aabb_y_min - ray.origin.y) / ray.direction.y
       t_y_max = (aabb_y_max - ray.origin.y) / ray.direction.y
       if t_y_min > t_y_max
@@ -147,7 +189,7 @@ function intersect(ray::Ray, aabb::AABB)
 
     if (ray.direction.z == 0) && (ray.origin.z <= aabb_z_max) && (ray.origin.z >= aabb_z_min)
       #c_x = true
-    elseif (ray.direction.z > 0)
+    elseif (ray.direction.z > 0) || (ray.direction.z < 0)
       t_z_min = (aabb_z_min - ray.origin.z) / ray.direction.z
       t_z_max = (aabb_z_max - ray.origin.z) / ray.direction.z
       if t_z_min > t_z_max
@@ -168,7 +210,7 @@ function intersect(ray::Ray, aabb::AABB)
         t_x_max = t_z_max
     end
 
-    return true, t_z_min, t_z_max
+    return true, t_x_min, t_x_max
 end
 
 
@@ -177,7 +219,7 @@ type Scene
 end
 
 function intersect(ray::Ray, scene::Scene)
-    nearest_type = nothing
+    object_hit = nothing
     nearest_dist = Inf32
     b = false
     t_0 = Inf32
@@ -189,23 +231,23 @@ function intersect(ray::Ray, scene::Scene)
         if b
             if t_0 < nearest_dist
                 nearest_dist = t_0;
-                nearest_type = typeof(o)
+                object_hit = o
             end;
 
             if t_1 < nearest_dist
                 nearest_dist = t_0;
-                nearest_type = typeof(o)
+                object_hit = o
             end;
             obj_hit = true
         end
     end
-    return obj_hit, nearest_dist, nearest_type
+    return obj_hit, nearest_dist, object_hit
 end
 
 function hitShader(ray::Ray, scene::Scene)
     b, d, t = intersect(ray, scene)
     if b
-        return 0.0f0
+        return 1.0f0
     else
         return 0.0f0
     end
@@ -220,6 +262,9 @@ function tracerays(scene::Scene,camera::Camera,shader::Function)
         for j=1:ny
             # generate ray for pixel i,j
             ray = generateRay(camera, i, j)
+            if i < 100 && j < 100
+      				println(ray)
+      			end
             # use shader function to calculate pixel value
             screen[i,j] = shader(ray, scene)
         end
@@ -227,7 +272,7 @@ function tracerays(scene::Scene,camera::Camera,shader::Function)
     # final visualization of image
     figure()
     gray()
-    imshow(screen)
+    imshow(screen')
     colorbar()
 end
 
