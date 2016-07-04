@@ -248,96 +248,96 @@ aabb2 = AABB(Float32[0.5,0.5,0],0.5f0,0.5f0,0.5f0)
 scene = Scene(SceneObject[sphere1,sphere2,aabb1,aabb2])
 camera1 = PinholeCamera(Float32[0,0,1],Float32[0,0,-1],Float32[0,1,0])
 
-tracerays(scene, camera1, hitShader)
+#tracerays(scene, camera1, hitShader)
 
-#
-# # task 5
-# function surfaceNormal(ray::Ray,t::Float32,sphere::Sphere)
-# 	# center of sphere
-# 	c = sphere.center
-# 	# point ray hits on sphere
-# 	h = ray.origin+t*ray.direction
-# 	return unitize(h-c)
-# end
-#
-# function surfaceNormal(ray::Ray,t::Float32,aabb::AABB)
-# 	# center of cube
-# 	c = aabb.center
-# 	#point ray hits on aabb
-# 	h = ray.origin+t*ray.direction
-# 	ch = h-c
-# 	x = abs(ch.e1/aabb.hx)
-# 	y = abs(ch.e2/aabb.hy)
-# 	z = abs(ch.e3/aabb.hz)
-# 	if x > y
-# 		if x > z
-# 			return sign(ch.e1/aabb.hx)*Vec4f(1,0,0,0)
-# 		else
-# 			return sign(ch.e3/aabb.hz)*Vec4f(0,0,1,0)
-# 		end
-# 	else
-# 		if y > z
-# 			return sign(ch.e2/aabb.hy)*Vec4f(0,1,0,0)
-# 		else
-# 			return sign(ch.e3/aabb.hz)*Vec4f(0,0,1,0)
-# 		end
-# 	end
-# end
-#
-# surfaceNormal(ray::Ray,t::Float32,void::Void) = Vec4f(0,0,0,0)
-#
-# abstract Lights
-#
-# type PointLights <: Lights
-# 	positions::Vector{Vec4f}
-# end
-#
-# function tracerays(scene::Scene,camera::Camera,lights::Lights,shader::Function)
-# 	nx = camera.nx
-# 	ny = camera.ny
-# 	screen = Array(Float32,nx,ny)
-# 	for i=1:nx
-# 		for j=1:ny
-# 			# generate ray for pixel i,j
-# 			ray = generateRay(camera, i, j)
-# 			# use shader function to calculate pixel value
-# 			screen[i,j] = shader(ray, scene, lights)
-# 		end
-# 	end
-# 	# final visualization of image
-# 	figure()
-# 	gray()
-# 	imshow(screen')
-# 	colorbar()
-# end
-#
-#
-# # Lambertian shading
-# function lambertShader(ray::Ray,scene::Scene,lights::Lights)
-# 	# intersect ray and scene
-#  	hit, t, object = intersect(ray::Ray,scene::Scene)
-# 	if hit
-# 		# compute surface normal
-# 		normal = surfaceNormal(ray,t,object)
-# 		# intersection point of camera ray
-# 		p = ray.origin+t*ray.direction
-# 		# initial shade of object
-# 		shade = 1.0f0
-# 		for l in lights.positions
-# 			# direction intersection point to light source
-# 			d = unitize(l-p)
-# 			# dot product of normal vector and direction to light
-# 			s = dot(normal,d)
-# 			# add light if light is in front of surface
-# 			shade += max(0.0f0,s)
-# 		end
-# 		return shade
-# 	else
-# 		return 0.0f0
-# 	end
-# end
-#
-# # set up lights
-# lights = PointLights(Vec4f[Vec4f(0.5,-0.5,0.3,1),Vec4f(0,0,5,1)])
-#
-# tracerays(scene, camera1, lights, lambertShader)
+
+# task 5
+function surfaceNormal(ray::Ray,t::Float32,sphere::Sphere)
+	# center of sphere
+	c = sphere.center
+	# point ray hits on sphere
+	h = ray.origin+t*ray.direction
+	return unitize(h-c)
+end
+
+function surfaceNormal(ray::Ray,t::Float32,aabb::AABB)
+	# center of cube
+	c = aabb.center
+	#point ray hits on aabb
+	h = ray.origin+t*ray.direction
+	ch = h-c
+	x = abs(ch.e1/aabb.hx)
+	y = abs(ch.e2/aabb.hy)
+	z = abs(ch.e3/aabb.hz)
+	if x > y
+		if x > z
+			return sign(ch.e1/aabb.hx)*Vec4f(1,0,0,0)
+		else
+			return sign(ch.e3/aabb.hz)*Vec4f(0,0,1,0)
+		end
+	else
+		if y > z
+			return sign(ch.e2/aabb.hy)*Vec4f(0,1,0,0)
+		else
+			return sign(ch.e3/aabb.hz)*Vec4f(0,0,1,0)
+		end
+	end
+end
+
+surfaceNormal(ray::Ray,t::Float32,void::Void) = Vec4f(0,0,0,0)
+
+abstract Lights
+
+type PointLights <: Lights
+	positions::Vector{Vec4f}
+end
+
+function tracerays(scene::Scene,camera::Camera,lights::Lights,shader::Function)
+	nx = camera.nx
+	ny = camera.ny
+	screen = Array(Float32,nx,ny)
+	for i=1:nx
+		for j=1:ny
+			# generate ray for pixel i,j
+			ray = generateRay(camera, i, j)
+			# use shader function to calculate pixel value
+			screen[i,j] = shader(ray, scene, lights)
+		end
+	end
+	# final visualization of image
+	figure()
+	gray()
+	imshow(screen')
+	colorbar()
+end
+
+
+# Lambertian shading
+function lambertShader(ray::Ray,scene::Scene,lights::Lights)
+	# intersect ray and scene
+ 	hit, t, object = intersect(ray::Ray,scene::Scene)
+	if hit
+		# compute surface normal
+		normal = surfaceNormal(ray,t,object)
+		# intersection point of camera ray
+		p = ray.origin+t*ray.direction
+		# initial shade of object
+		shade = 1.0f0
+		for l in lights.positions
+			# direction intersection point to light source
+			d = unitize(l-p)
+			# dot product of normal vector and direction to light
+			s = dot(normal,d)
+			# add light if light is in front of surface
+			shade += max(0.0f0,s)
+		end
+		return shade
+	else
+		return 0.0f0
+	end
+end
+
+# set up lights
+lights = PointLights(Vec4f[Vec4f(0.5,-0.5,0.3,1),Vec4f(0,0,5,1)])
+
+tracerays(scene, camera1, lights, lambertShader)

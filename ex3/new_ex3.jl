@@ -277,7 +277,7 @@ function tracerays(scene::Scene,camera::Camera,shader::Function)
         end
     end
     # final visualization of image
-    figure()
+    figure("new_ex3")
     gray()
     imshow(screen')
     colorbar()
@@ -295,4 +295,85 @@ scene = Scene(SceneObject[sphere1,sphere2,aabb1,aabb2])
 camera = PinholeCamera(Float32[0,0,1],Float32[0,0,-1],Float32[0,1,0])
 
 # render scene
-tracerays(scene, camera, hitShader)
+#tracerays(scene, camera, hitShader)
+
+
+function surfaceNormal(ray::Ray,t::Float32,sphere::Sphere)
+  return (ray.origin + t*ray.direction) - sphere.center
+end
+
+function surfaceNormal(ray::Ray,t::Float32,aabb::AABB)
+  hit = (ray.origin + t*ray.direction)
+  aabb_cTohit = hit - aabb.center
+
+  if hit.x == aabb.center.x + aabb.hx
+    return Vec4f(1, 0, 0, 0)
+  elseif hit.x == aabb.center.x - aabb.hx
+    return Vec4f(-1, 0, 0, 0)
+  elseif hit.y == aabb.center.y + aabb.hy
+    return Vec4f(0, 1, 0, 0)
+  elseif hit.y == aabb.center.y - aabb.hy
+    return Vec4f(0, -1, 0, 0)
+  elseif hit.z == aabb.center.z + aabb.hz
+    return Vec4f(0, 0, 1, 0)
+  elseif hit.z == aabb.center.z - aabb.hz
+    return Vec4f(0, 0, -1, 0)
+  else
+    println("Error: no case")
+    return Vec4f(0,0,0,0)
+  end
+end
+
+function surfaceNormal(ray::Ray,t::Float32,void::Void)
+  return Vec4f(0,0,0,0)
+end
+
+abstract Lights
+type PointLights <: Lights
+  positions::Vector{Vec4f}
+end
+
+
+function tracerays(scene::Scene,camera::Camera, lights::Lights, shader::Function)
+    nx = camera.nx
+    ny = camera.ny
+    screen = Array(Float32,nx,ny)
+    for i=1:nx
+        for j=1:ny
+            # generate ray for pixel i,j
+            ray = generateRay(camera, i, j)
+            if i < 10 && j < 10
+      				#println(i, j, ray)
+      		  end
+            # use shader function to calculate pixel value
+            screen[i,j] = shader(ray, scene, lights)
+        end
+    end
+    # final visualization of image
+    figure()
+    gray()
+    imshow(screen')
+    colorbar()
+end
+
+function lambertShader(ray::Ray, scene::Scene, lights::Lights)
+  hit, distance, object = intersect(ray, scene)
+  if (hit)
+    surface_normal = surfaceNormal(ray, distance, object)
+    sum = 0
+    hit_point = ray.origin + distance * ray.direction
+    for light in lights.positions
+      lightToHit = unitize(light - hit_point)
+      angle = dot(lightToHit, surface_normal) / (euclideanNorm(lightToHit) * euclideanNorm(surface_normal))
+      sum += abs(angle)
+    end
+    return 1.0f0 * sum/length(lights.positions)
+  else
+    return 0.0f0
+  end
+end
+
+# set up lights
+lights = PointLights(Vec4f[Vec4f(0.5,-0.5,0.3,1),Vec4f(0,0,5,1)])
+
+tracerays(scene, camera, lights, lambertShader)
