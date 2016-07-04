@@ -61,11 +61,12 @@ function generateRay(camera::PinholeCamera, i::Int, j::Int)
 	p = Vec4f(u,v,0,1)
 	# eye position
 	o = Vec4f(0,0,camera.d,1)
-
+  #println(unitize(p-o))
 	# origin in world coordinates
 	origin = camera.camToWorld*p
 	# unit vector for ray direction
-	direction = camera.camToWorld*(unitize(p-o))
+  j = p-o
+	direction = camera.camToWorld*(unitize(j))
 	# println(direction);
 	return Ray(origin,direction)
 end
@@ -88,12 +89,18 @@ end
 AABB(center::Vector{Float32}, hx::Float32, hy::Float32, hz::Float32) = AABB(Vec4f(center[1], center[2], center[3], 1), hx, hy, hz)
 
 *(vec1::Vec4f, vec2::Vec4f) = vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z
--(vec1::Vec4f, vec2::Vec4f) = Vec4f(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z, vec1.v)
+-(vec1::Vec4f, vec2::Vec4f) = Vec4f(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z, vec1.v-vec2.v)
 
-*(a::Int64, v::Vec4f) = Vec4f(a*v.x, a*v.y, a*v.z, v.v)
+*(a::Int64, v::Vec4f) = Vec4f(a*v.x, a*v.y, a*v.z, a*v.v)
 
 import Base: dot
-dot(v::Vec4f,w::Vec4f) = v.x*w.x+v.y*w.y+v.z*w.z+v.v*w.v
+dot(v::Vec4f,w::Vec4f) = dothelper(v, w)
+function dothelper(v::Vec4f,w::Vec4f)
+  r = v.x*w.x+v.y*w.y+v.z*w.z+v.v*w.v
+  #println(v, w)
+  return r
+end
+
 unitize(v::Vec4f) = (1.0f0 / sqrt(dot(v, v)) * v)
 
 function intersect(ray::Ray, sphere::Sphere)
@@ -262,9 +269,9 @@ function tracerays(scene::Scene,camera::Camera,shader::Function)
         for j=1:ny
             # generate ray for pixel i,j
             ray = generateRay(camera, i, j)
-            if i < 100 && j < 100
-      				println(ray)
-      			end
+            if i < 10 && j < 10
+      				#println(i, j, ray)
+      		end
             # use shader function to calculate pixel value
             screen[i,j] = shader(ray, scene)
         end

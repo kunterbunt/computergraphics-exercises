@@ -3,7 +3,12 @@ using PyPlot
 include("CG1+2.jl")
 
 import Base: dot
-dot(v::Vec4f,w::Vec4f) = v.e1*w.e1+v.e2*w.e2+v.e3*w.e3+v.e4*w.e4
+dot(v::Vec4f,w::Vec4f) = dothelper(v, w)
+function dothelper(v::Vec4f,w::Vec4f)
+  r = v.e1*w.e1+v.e2*w.e2+v.e3*w.e3+v.e4*w.e4
+  #println(v, w)
+  return r
+end
 unitize(v::Vec4f) = (1.0f0 / sqrt(dot(v, v)) * v)
 
 
@@ -97,11 +102,11 @@ function generateRay(camera::PinholeCamera, i::Int, j::Int)
 	p = Vec4f(u,v,0,1)
 	# eye position
 	o = Vec4f(0,0,camera.d,1)
-
 	# origin in world coordinates
 	origin = camera.camToWorld*p
 	# unit vector for ray direction
-	direction = camera.camToWorld*(unitize(p-o))
+	j = p-o
+	direction = camera.camToWorld*(unitize(j))
 	# println(direction);
 	return Ray(origin,direction)
 
@@ -220,8 +225,8 @@ function tracerays(scene::Scene,camera::Camera,shader::Function)
 		for j=1:ny
 			# generate ray for pixel i,j
 			ray = generateRay(camera, i, j)
-			if i < 100 && j < 100
-				println(ray)
+			if i < 10 && j < 10
+				#println(i, j, ray)
 			end
 			# use shader function to calculate pixel value
 			screen[i,j] = shader(ray, scene)
