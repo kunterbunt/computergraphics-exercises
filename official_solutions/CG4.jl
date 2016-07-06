@@ -18,7 +18,7 @@ sceneLights1 = SceneLights(Lights[pointLight1,pointLight2])
 # trace rays using two hit and Lambert shader
 # tracerays(scene, camera, sceneLights1, hitShader)
 savefig("sceneLights1hitShader.png")
-tracerays(scene, camera, sceneLights1, lambertShader)
+#tracerays(scene, camera, sceneLights1, lambertShader)
 savefig("sceneLights1lambertShader.png")
 
 # task 2
@@ -51,7 +51,7 @@ function lightShader(ray::Ray,scene::Scene,sceneLights::SceneLights)
 	end
 end
 
-#tracerays(scene, camera, sceneLights1, lightShader)
+tracerays(scene, camera, sceneLights1, lightShader)
 savefig("sceneLights1lightShader.png")
 
 function shadowShader(ray::Ray,scene::Scene,sceneLights::SceneLights)
@@ -92,7 +92,7 @@ function shadowShader(ray::Ray,scene::Scene,sceneLights::SceneLights)
 	end
 end
 
-#tracerays(scene, camera, sceneLights1, shadowShader)
+tracerays(scene, camera, sceneLights1, shadowShader)
 savefig("sceneLights1shadowShader.png")
 
 

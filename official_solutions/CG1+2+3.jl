@@ -116,10 +116,10 @@ end
 import Base: inv
 function inv(M::Mat4f)
 	m = zeros(4,4)
-	m[1,1] = M.v1.e1; m[1,2] = M.v2.e1; m[1,3] = M.v3.e1; m[1,4] = M.v4.e1; 
-	m[2,1] = M.v1.e2; m[2,2] = M.v2.e2; m[2,3] = M.v3.e2; m[2,4] = M.v4.e2; 
-	m[3,1] = M.v1.e3; m[3,2] = M.v2.e3; m[3,3] = M.v3.e3; m[3,4] = M.v4.e3; 
-	m[4,1] = M.v1.e4; m[4,2] = M.v2.e4; m[4,3] = M.v3.e4; m[4,4] = M.v4.e4; 
+	m[1,1] = M.v1.e1; m[1,2] = M.v2.e1; m[1,3] = M.v3.e1; m[1,4] = M.v4.e1;
+	m[2,1] = M.v1.e2; m[2,2] = M.v2.e2; m[2,3] = M.v3.e2; m[2,4] = M.v4.e2;
+	m[3,1] = M.v1.e3; m[3,2] = M.v2.e3; m[3,3] = M.v3.e3; m[3,4] = M.v4.e3;
+	m[4,1] = M.v1.e4; m[4,2] = M.v2.e4; m[4,3] = M.v3.e4; m[4,4] = M.v4.e4;
 	minv = inv(m)
 	v1 = Vec4f(minv[1:4,1]...)
 	v2 = Vec4f(minv[1:4,2]...)
@@ -298,7 +298,7 @@ function intersect(ray::Ray, aabb::AABB)
 		end
 	end
 	# cube is in front of us
-	if tmin > 0 
+	if tmin > 0
 		return true, tmin
 	# cam is inside the cube
 	else
@@ -318,7 +318,7 @@ function intersect(ray::Ray,scene::Scene)
 	for object in scene.sceneObjects
 		hittmp, t = intersect(ray,object)
 		hit = hittmp || hit
-		if hittmp & (t < tin) 
+		if hittmp & (t < tin)
 			tin = t
 			objhit = object
 		end
@@ -418,7 +418,7 @@ function lambertShader(ray::Ray,scene::Scene,lights::SceneLights)
 		normal = surfaceNormal(ray,t,object)
 		# intersection point of camera ray
 		p = ray.origin+t*ray.direction
-		# initial shade of object 
+		# initial shade of object
 		shade = 1.0f0
 		for l in positions(lights)
 			# direction intersection point to light source

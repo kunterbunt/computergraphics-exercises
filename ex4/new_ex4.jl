@@ -50,7 +50,7 @@ function tracerays(scene::Scene,camera::Camera, scenelights::SceneLights, shader
             # use shader function to calculate pixel value
             screen[i,j] += shader(ray, scene, scenelights)
         end
-    end
+    endfun
     # final visualization of image
     figure()
     gray()
@@ -72,4 +72,54 @@ pointLight2 = PointLights([Vec4f(0,0,5,1)])
 sceneLights1 = SceneLights(Lights[pointLight1,pointLight2])
 # trace rays using two hit and Lambert shader
 # tracerays(scene, camera, sceneLights1, hitShader)
-tracerays(scene, camera, sceneLights1, lambertShader)
+#tracerays(scene, camera, sceneLights1, lambertShader)
+
+
+function lightShader(ray ::Ray,scene::Scene,sceneLights::SceneLights)
+	hit, distance, object = intersect(ray, scene)
+  if (hit)
+    surface_normal = surfaceNormal(ray, distance, object)
+    sum = 1f0
+    hit_point = ray.origin + distance * ray.direction
+    for light in positions(lights)
+      lightToHit = unitize(light - hit_point)
+      cosAngle = dot(lightToHit, surface_normal) / (euclideanNorm(lightToHit) * euclideanNorm(surface_normal))
+			if cosAngle > 0
+				sum += 1f0
+			end
+    end
+    return 1.0f0 * sum #/ counter
+  else
+    return 0.0f0
+  end
+end
+
+tracerays(scene, camera, sceneLights1, lightShader)
+
+function shadowShader(ray::Ray,scene::Scene,sceneLights ::SceneLights)
+	hit, distance, object = intersect(ray, scene)
+  if (hit)
+    surface_normal = surfaceNormal(ray, distance, object)
+    sum = 1f0
+    hit_point = ray.origin + distance * ray.direction
+    for light in positions(lights)
+      lightToHit = unitize(light - hit_point)
+			rayToLight = Ray(hit_point+ 0.125*lightToHit, lightToHit)
+
+			hit, distance, object = intersect(ray, scene)
+			if !hit
+	      cosAngle = dot(lightToHit, surface_normal) / (euclideanNorm(lightToHit) * euclideanNorm(surface_normal))
+				if cosAngle > 0
+					sum += 1f0
+				end
+			end
+    end
+
+		#println(sum)
+    return 1.0f0 * sum #/ counter
+  else
+    return 0.0f0
+  end
+end
+
+tracerays(scene, camera, sceneLights1, shadowShader)
