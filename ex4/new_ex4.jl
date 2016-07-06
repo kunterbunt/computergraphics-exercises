@@ -24,7 +24,7 @@ function lambertShader(ray::Ray, scene::Scene, lights::SceneLights)
   hit, distance, object = intersect(ray, scene)
   if (hit)
     surface_normal = surfaceNormal(ray, distance, object)
-    sum = 0
+    sum = 1f0
     hit_point = ray.origin + distance * ray.direction
     counter = 0
     for light in positions(lights)
@@ -33,7 +33,7 @@ function lambertShader(ray::Ray, scene::Scene, lights::SceneLights)
       sum += max(0, cosAngle)
       counter = counter + 1
     end
-    return 1.0f0 * sum / counter
+    return 1.0f0 * sum #/ counter
   else
     return 0.0f0
   end
@@ -56,6 +56,7 @@ function tracerays(scene::Scene,camera::Camera, scenelights::SceneLights, shader
     gray()
     imshow(screen')
     colorbar()
+		println("In new tracerays")
 end
 
 sphere1 = Sphere(Float32[-0.5,0.5,0],0.25f0)

@@ -51,7 +51,7 @@ function lightShader(ray::Ray,scene::Scene,sceneLights::SceneLights)
 	end
 end
 
-tracerays(scene, camera, sceneLights1, lightShader)
+#tracerays(scene, camera, sceneLights1, lightShader)
 savefig("sceneLights1lightShader.png")
 
 function shadowShader(ray::Ray,scene::Scene,sceneLights::SceneLights)
@@ -92,7 +92,7 @@ function shadowShader(ray::Ray,scene::Scene,sceneLights::SceneLights)
 	end
 end
 
-tracerays(scene, camera, sceneLights1, shadowShader)
+#tracerays(scene, camera, sceneLights1, shadowShader)
 savefig("sceneLights1shadowShader.png")
 
 
@@ -130,9 +130,9 @@ flatLight1 = FlatLight(Vec4f(0,0,1,1),Vec4f(1,0,0,0),Vec4f(0,1,0,0),25)
 flatLight2 = FlatLight(Vec4f(0,0,1,1),Vec4f(1,0,0,0),Vec4f(0,1,0,0),250)
 sceneLights2 = SceneLights(Lights[flatLight1])
 sceneLights3 = SceneLights(Lights[flatLight2])
-tracerays(scene, camera, sceneLights2, shadowShader)
+#tracerays(scene, camera, sceneLights2, shadowShader)
 savefig("flatLightshadowShader25.png")
-tracerays(scene, camera, sceneLights3, shadowShader)
+#tracerays(scene, camera, sceneLights3, shadowShader)
 savefig("flatLightshadowShader500.png")
 
 
@@ -182,9 +182,9 @@ function shadowBlinnPhongShader(ray::Ray,scene::Scene,sceneLights::SceneLights;p
 	end
 end
 
-tracerays(scene, camera, sceneLights1, shadowBlinnPhongShader)
+#tracerays(scene, camera, sceneLights1, shadowBlinnPhongShader)
 savefig("sceneLights1shadowBlinnPhongShader.png")
-tracerays(scene, camera, sceneLights3, shadowBlinnPhongShader)
+#tracerays(scene, camera, sceneLights3, shadowBlinnPhongShader)
 savefig("sceneLights3shadowBlinnPhongShader.png")
 
 
@@ -240,7 +240,7 @@ function shadowReflectionBlinnPhongShader(ray::Ray,scene::Scene,sceneLights::Sce
 	end
 end
 
-tracerays(scene, camera, sceneLights1, shadowReflectionBlinnPhongShader)
+#tracerays(scene, camera, sceneLights1, shadowReflectionBlinnPhongShader)
 savefig("sceneLights1shadowReflectionBlinnPhongShader.png")
 
 
@@ -273,5 +273,5 @@ function surfaceNormal(ray::Ray,t::Float32,to::TO)
 	return unitize(to.localToWorld*surfaceNormal(localray,t,to.baseObject))
 end
 
-tracerays(scene3, camera, sceneLights3, hitShader)
-tracerays(scene3, camera, sceneLights3, shadowBlinnPhongShader)
+#tracerays(scene3, camera, sceneLights3, hitShader)
+#tracerays(scene3, camera, sceneLights3, shadowBlinnPhongShader)

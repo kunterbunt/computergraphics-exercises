@@ -15,7 +15,7 @@ type PinholeCamera <: Camera
   # distance eye screen
   d::Float32
 
-  PinholeCamera(camToWorld::Transformation,worldToCam::Transformation) = new(camToWorld,worldToCam,800,800,2.0f0,2.0f0,2.0f0)
+  PinholeCamera(camToWorld::Transformation,worldToCam::Transformation) = new(camToWorld,worldToCam,256,256,2.0f0,2.0f0,2.0f0)
 end
 
 function PinholeCamera(rc::Vector{Float32},rv::Vector{Float32},ru::Vector{Float32})
