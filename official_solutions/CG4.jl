@@ -16,7 +16,7 @@ pointLight2 = PointLight(Vec4f(0,0,5,1))
 sceneLights1 = SceneLights(Lights[pointLight1,pointLight2])
 
 # trace rays using two hit and Lambert shader
-tracerays(scene, camera, sceneLights1, hitShader)
+# tracerays(scene, camera, sceneLights1, hitShader)
 savefig("sceneLights1hitShader.png")
 tracerays(scene, camera, sceneLights1, lambertShader)
 savefig("sceneLights1lambertShader.png")
@@ -227,7 +227,7 @@ function shadowReflectionBlinnPhongShader(ray::Ray,scene::Scene,sceneLights::Sce
 				end
 			end
 		end
-		
+
 		if recursionDepth<4
 			reflectionDirection = unitize(ray.direction - 2*dot(ray.direction,normal)*normal)
 			reflectionRay = Ray(p+1f-5*reflectionDirection,reflectionDirection)
@@ -275,4 +275,3 @@ end
 
 tracerays(scene3, camera, sceneLights3, hitShader)
 tracerays(scene3, camera, sceneLights3, shadowBlinnPhongShader)
-

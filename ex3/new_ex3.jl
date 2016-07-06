@@ -376,4 +376,4 @@ end
 # set up lights
 lights = PointLights(Vec4f[Vec4f(0.5,-0.5,0.3,1),Vec4f(0,0,5,1)])
 
-tracerays(scene, camera, lights, lambertShader)
+# tracerays(scene, camera, lights, lambertShader)
