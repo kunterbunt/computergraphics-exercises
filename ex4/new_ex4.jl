@@ -4,7 +4,20 @@ type SceneLights
 	lights::Vector{Lights}
 end
 
-function positions(pointLight::PointLights)
+function all_SL_positions(sceneLights::SceneLights)
+	allLights = Vec4f[]
+	for light in sceneLights.lights
+		println("in loop")
+		allLights = Vec4f[positions_of_lights(light); allLights]
+	end
+end
+
+function positions_of_lights(lights::PointLights)
+	#println(lights)
+	return lights.positions
+end
+
+function positions_light(pointLight::PointLights)
 	out = Vec4f[]
 	for position in pointLight.positions
     out = Vec4f[position; out]
@@ -15,7 +28,7 @@ end
 function positions(sceneLights::SceneLights)
 	out = Vec4f[]
 	for light in sceneLights.lights
-		append!(out, positions(light))
+		append!(out, positions_light(light))
 	end
 	return out
 end
@@ -43,20 +56,25 @@ function tracerays(scene::Scene,camera::Camera, scenelights::SceneLights, shader
     nx = camera.nx
     ny = camera.ny
     screen = Array(Float32,nx,ny)
-    for i=1:nx
+		count = 0
+		for i=1:nx
         for j=1:ny
             # generate ray for pixel i,j
             ray = generateRay(camera, i, j)
             # use shader function to calculate pixel value
             screen[i,j] += shader(ray, scene, scenelights)
+						if screen[i,j] >= 2
+							count += 1
+						end
         end
-    endfun
+    end
+		println("light positions", positions(scenelights))
+		println(count)
     # final visualization of image
     figure()
     gray()
     imshow(screen')
     colorbar()
-		println("In new tracerays")
 end
 
 sphere1 = Sphere(Float32[-0.5,0.5,0],0.25f0)
@@ -81,7 +99,7 @@ function lightShader(ray ::Ray,scene::Scene,sceneLights::SceneLights)
     surface_normal = surfaceNormal(ray, distance, object)
     sum = 1f0
     hit_point = ray.origin + distance * ray.direction
-    for light in positions(lights)
+    for light in positions(sceneLights)
       lightToHit = unitize(light - hit_point)
       cosAngle = dot(lightToHit, surface_normal) / (euclideanNorm(lightToHit) * euclideanNorm(surface_normal))
 			if cosAngle > 0
@@ -94,23 +112,29 @@ function lightShader(ray ::Ray,scene::Scene,sceneLights::SceneLights)
   end
 end
 
-tracerays(scene, camera, sceneLights1, lightShader)
+#tracerays(scene, camera, sceneLights1, lightShader)
 
-function shadowShader(ray::Ray,scene::Scene,sceneLights ::SceneLights)
+function shadowShader(ray::Ray,scene::Scene, sceneLights ::SceneLights)
 	hit, distance, object = intersect(ray, scene)
   if (hit)
     surface_normal = surfaceNormal(ray, distance, object)
     sum = 1f0
     hit_point = ray.origin + distance * ray.direction
-    for light in positions(lights)
+    for light in positions(sceneLights)
       lightToHit = unitize(light - hit_point)
-			rayToLight = Ray(hit_point+ 0.125*lightToHit, lightToHit)
+			#MAGIC
+			rayToLight = Ray(hit_point +1.0f-5*lightToHit, lightToHit)
 
-			hit, distance, object = intersect(ray, scene)
-			if !hit
-	      cosAngle = dot(lightToHit, surface_normal) / (euclideanNorm(lightToHit) * euclideanNorm(surface_normal))
-				if cosAngle > 0
-					sum += 1f0
+			# Light in sight of surface_normal?
+			s = dot(lightToHit, surface_normal)
+			if s > 0
+				hit, distance, object = intersect(rayToLight, scene)
+				if !hit #|| distance*distance > dot(lightToHit,lightToHit)
+					sum += 1
+					# cosAngle = dot(lightToHit, surface_normal) / (euclideanNorm(lightToHit) * euclideanNorm(surface_normal))
+					# if cosAngle > 0
+					# 	sum += 1f0
+					# end
 				end
 			end
     end
@@ -122,4 +146,4 @@ function shadowShader(ray::Ray,scene::Scene,sceneLights ::SceneLights)
   end
 end
 
-tracerays(scene, camera, sceneLights1, shadowShader)
+#tracerays(scene, camera, sceneLights1, shadowShader)
