@@ -33,7 +33,7 @@ end
 
 s = FrameBuffer(51,51)
 colorPixel!(s,25,25,0xff)
-plot(s)
+#plot(s)
 
 # task 2
 #simplest approach works for slopes -1 <= m <= 1
@@ -63,7 +63,7 @@ drawSimpleLine!(s,5,5,47,47)
 drawSimpleLine!(s,5,47,47,5)
 drawSimpleLine!(s,24,5,28,47)
 drawSimpleLine!(s,26,5,26,47)
-plot(s)
+#plot(s)
 
 #next appraoch works for all slopes
 function drawLessSimpleLine!(buffer::FrameBuffer,x0::Int,y0::Int,x1::Int,y1::Int)
@@ -101,7 +101,7 @@ drawLessSimpleLine!(s,5,5,47,47)
 drawLessSimpleLine!(s,5,47,47,5)
 drawLessSimpleLine!(s,24,5,28,47)
 drawLessSimpleLine!(s,26,5,26,47)
-plot(s)
+#plot(s)
 
 #optimized version
 function drawFastSimpleLine!(buffer::FrameBuffer,x0::Int,y0::Int,x1::Int,y1::Int)
@@ -120,7 +120,7 @@ function drawFastSimpleLine!(buffer::FrameBuffer,x0::Int,y0::Int,x1::Int,y1::Int
 		m = (x1-x0)/(y1-y0)
 		ymin = max(min(y0,y1),1)
 		ymax = min(max(y0,y1),buffer.ny)
-		
+
 		x = m*(ymin-y0)+x0
 		for yi=ymin:ymax
 			xi = round(Int,x)
@@ -132,15 +132,20 @@ function drawFastSimpleLine!(buffer::FrameBuffer,x0::Int,y0::Int,x1::Int,y1::Int
 end
 
 s = FrameBuffer(51,51)
-drawFastSimpleLine!(s,47,26,5,26)
-drawFastSimpleLine!(s,5,5,47,47)
-drawFastSimpleLine!(s,5,10,47,42)
-drawFastSimpleLine!(s,5,47,47,5)
-drawFastSimpleLine!(s,24,5,28,47)
-drawFastSimpleLine!(s,26,5,26,47)
+# drawFastSimpleLine!(s,47,26,5,26)
+# drawFastSimpleLine!(s,5,5,47,47)
+# drawFastSimpleLine!(s,5,10,47,42)
+# drawFastSimpleLine!(s,5,47,47,5)
+# drawFastSimpleLine!(s,24,5,28,47)
+# drawFastSimpleLine!(s,26,5,26,47)
 
 # task 3
 function drawBresenhamLine!(buffer::FrameBuffer,x0::Int,y0::Int,x1::Int,y1::Int)
+	if (x0 > x1)
+		x0, x1 = x1, x0
+		y0, y1 = y1, y0
+	end
+
 	if x1<x0
 		warn("This case is not covered")
 		return nothing
@@ -172,9 +177,12 @@ function drawBresenhamLine!(buffer::FrameBuffer,x0::Int,y0::Int,x1::Int,y1::Int)
 
 #Much smarter to only use additions
 	D = A2*x0+B*(2*y0+1)+C2
+	println(D)
+	println(A2)
+	println(B2)
 	for xi=x0+1:x1
     		D += A2
-		if D>0 
+		if D>0
 			yi += 1
 			D += B2
 		end
@@ -190,6 +198,7 @@ drawBresenhamLine!(s,5,10,47,42)
 drawBresenhamLine!(s,5,47,47,5)
 drawBresenhamLine!(s,24,5,28,47)
 drawBresenhamLine!(s,26,5,26,47)
+#plot(s)
 
 #task 4
 function whichOctant(x0,y0,x1,y1)
@@ -228,8 +237,8 @@ function whichOctant(x0,y0,x1,y1)
 	end
 end
 
-function switchToOctantZeroFrom(octant,x0,y0,x1,y1) 
-	if octant == 0 
+function switchToOctantZeroFrom(octant,x0,y0,x1,y1)
+	if octant == 0
 		return x0,y0,x1,y1
 	elseif octant == 1
 		return y0,x0,y1,x1
@@ -245,12 +254,12 @@ function switchToOctantZeroFrom(octant,x0,y0,x1,y1)
 		return -y0,x0,-y1,x1
 	elseif octant == 7
 		return x0,-y0,x1,-y1
-	else 
+	else
 		error("octand=$octand is not in {0,1,...,7}")
 	end
 end
- 
-function switchFromOctantZeroTo(octant, xi, yi) 
+
+function switchFromOctantZeroTo(octant, xi, yi)
 	if octant == 0
 		return xi, yi
 	elseif octant == 1
@@ -267,7 +276,7 @@ function switchFromOctantZeroTo(octant, xi, yi)
 		return yi, -xi
 	elseif octant == 7
 		return xi, -yi
-	else 
+	else
 		error("octand=$octand is not in {0,1,...,7}")
 	end
 end
@@ -293,7 +302,7 @@ function drawLine!(buffer::FrameBuffer,x0::Int,y0::Int,x1::Int,y1::Int,color::UI
 	D = A2*xa+B*(2*ya+1)+C2
 	for xi=xa+1:xe
     		D += A2
-		if D>0 
+		if D>0
 			yi += 1
 			D += B2
 		end
@@ -341,7 +350,7 @@ end
 
 s = FrameBuffer(51,51)
 drawTriangle!(s,10,10,10,42,42,42,0xff)
-plot(s)
+#plot(s)
 
 # task 6
 function drawTriangle!(buffer::FrameBuffer,xa::Int,ya::Int,xb::Int,yb::Int,xc::Int,yc::Int,ca::UInt8,cb::UInt8,cc::UInt8)
@@ -371,5 +380,4 @@ end
 
 s = FrameBuffer(51,51)
 drawTriangle!(s,10,10,10,42,42,42,0x40,0x80,0xf0)
-plot(s)
-
+#plot(s)
